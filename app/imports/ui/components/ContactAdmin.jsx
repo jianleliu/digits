@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, Image } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-/** Renders a single row in the List Stuff table. See pages/ListStuff.jsx. */
+/** Renders a single row in the List Contact table. See pages/ListContact.jsx. */
 const ContactAdmin = ({ contact }) => (
   <Card className="h-100">
     <Card.Header>
@@ -13,6 +14,7 @@ const ContactAdmin = ({ contact }) => (
     <Card.Body>
       <Card.Text>{contact.description}</Card.Text>
       <footer className="blockquote-footer">{contact.owner}</footer>
+      <Link to={`/edit/${contact._id}`}>Edit</Link>
     </Card.Body>
   </Card>
 );
@@ -26,7 +28,6 @@ ContactAdmin.propTypes = {
     image: PropTypes.string,
     description: PropTypes.string,
     owner: PropTypes.string,
-    // eslint-disable-next-line
     _id: PropTypes.string,
   }).isRequired,
 };

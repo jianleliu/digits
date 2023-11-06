@@ -18,7 +18,7 @@ const ListContact = () => {
     const notes_subscription = Meteor.subscribe(Notes.userPublicationName);
     // Determine if the subscriptions are ready
     const rdy = subscription.ready() && notes_subscription.ready();
-    // Get the Stuff documents
+    // Get the Contact documents
     const contactItems = Contacts.collection.find({}).fetch();
     const noteItems = Notes.collection.find({}).fetch();
     return {

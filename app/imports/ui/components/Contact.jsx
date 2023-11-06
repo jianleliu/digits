@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-/** Renders a single row in the List Stuff table. See pages/ListStuff.jsx. */
+/** Renders a single row in the List contact table. See pages/ListContact.jsx. */
 const Contact = ({ contact }) => (
   <Card className="h-100">
     <Card.Header>

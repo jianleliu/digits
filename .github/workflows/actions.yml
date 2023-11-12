@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - cicd-test
+  
+env:
+  docker_image: ${{ secrets.DOCKERHUB_USERNAME }}/digits:latest
+  docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+  docker_password: ${{ secrets.DOCKERHUB_TOKEN }}
+  
+  #AWS EC2
+  ec2_host: ${{ secrets.EC2_HOST }}
+  ec2_username: ${{ secrets.EC2_USERNAME }}
+  ec2_ssh_key: ${{ secrets.EC2_SSH_KEY }}
+  ec2_ssh_port: ${{ secrets.EC2_SSH_PORT }}
 
 jobs:
   build:
@@ -26,20 +37,20 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        username: ${{ env.docker_username }}
+        password: ${{ env.docker_password }}
 
     - name: Debug - Display Docker version
       run: docker --version
 
     - name: Build Docker image
-      run: docker build -t digits .
+      run: docker build -t ${{ env.docker_image }} .
 
     - name: Debug - Display Docker image list
       run: docker image ls
 
     - name: Push to Docker Hub
-      run: docker push digits:latest
+      run: docker push ${{ env.docker_image }}
 
   deploy:
     needs: build
@@ -54,10 +65,10 @@ jobs:
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_SSH_PORT }}
+          host: ${{ env.ec2_host }}
+          username: ${{ env.ec2_username }}
+          key: ${{ env.ec2_ssh_key }}
+          port: ${{ env.ec2_ssh_port }}
           inline: |
             echo "Executing deploy_script.sh"
             chmod +x deploy_script.sh

@@ -62,14 +62,21 @@ jobs:
         with:
             sparse-checkout: |
               scripts
-              
+
+      - name: Set up SSH key file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa ${{ env.ec2_host }} >> ~/.ssh/known_hosts
+          
       - name: Debug - Display workspace contents
         run: |
           echo "Contents of the workspace:"
           ls -al
 
       - name: Copy script to Server
-        run: scp -i ${{ env.ec2_ssh_key }} -r ./scripts ${{ env.ec2_username }}@${{ env.ec2_host }}:/home/${{ env.ec2_username }}
+        run: scp -i ~/.ssh/id_rsa -r ./scripts ${{ env.ec2_username }}@${{ env.ec2_host }}:/home/${{ env.ec2_username }}
 
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.0
@@ -80,4 +87,5 @@ jobs:
           port: ${{ env.ec2_ssh_port }}
           script: |
             echo "Executing deploy_script.sh"
+            chmod 777 ./scripts/deploy_script.sh
             ./scripts/deploy_script.sh

@@ -1,0 +1,62 @@
+name: Build and deploy pipeline
+
+on:
+  push:
+    branches:
+      - cicd-test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout:
+          .
+
+    - name: Debug - List files in the workspace
+      run: |
+        echo "Files in the workspace:"
+        ls -al
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Debug - Display Docker version
+      run: docker --version
+
+    - name: Build Docker image
+      run: docker build -t digits .
+
+    - name: Debug - Display Docker image list
+      run: docker image ls
+
+    - name: Push to Docker Hub
+      run: docker push digits:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Debug - Display workspace contents
+        run: |
+          echo "Contents of the workspace:"
+          ls -al
+
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          inline: |
+            echo "Executing deploy_script.sh"
+            chmod +x deploy_script.sh
+            ./deploy_script.sh

@@ -57,6 +57,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout the script directory
+        uses: actions/checkout@v4
+        with:
+            sparse-checkout: |
+              scripts
+              
       - name: Debug - Display workspace contents
         run: |
           echo "Contents of the workspace:"

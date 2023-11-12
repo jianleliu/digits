@@ -9,7 +9,7 @@ RUN curl https://install.meteor.com/ | sh && \
 
 ENV METEOR_ALLOW_SUPERUSER=true
 
-WORKDIR src/app
+WORKDIR /app/app
 
 RUN meteor npm install
 

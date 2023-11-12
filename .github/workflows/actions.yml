@@ -59,4 +59,4 @@ jobs:
           inline: |
             echo "Executing deploy_script.sh"
             chmod +x deploy_script.sh
-            ./deploy_script.sh
+            ./scripts/deploy_script.sh

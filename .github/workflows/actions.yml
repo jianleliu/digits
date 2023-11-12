@@ -13,8 +13,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        sparse-checkout:
-          .
+        sparse-checkout: |
+          .github
+          scripts
+          src
 
     - name: Debug - List files in the workspace
       run: |

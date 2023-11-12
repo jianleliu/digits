@@ -57,26 +57,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the script directory
-        uses: actions/checkout@v4
-        with:
-            sparse-checkout: |
-              scripts
-
-      - name: Set up SSH key file
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -t rsa ${{ env.ec2_host }} >> ~/.ssh/known_hosts
-          
       - name: Debug - Display workspace contents
         run: |
           echo "Contents of the workspace:"
           ls -al
-
-      - name: Copy script to Server
-        run: scp -i ~/.ssh/id_rsa -r ./scripts ${{ env.ec2_username }}@${{ env.ec2_host }}:/home/${{ env.ec2_username }}
 
       - name: Deploy to AWS EC2
         uses: appleboy/ssh-action@v1.0.0
@@ -86,6 +70,7 @@ jobs:
           key: ${{ env.ec2_ssh_key }}
           port: ${{ env.ec2_ssh_port }}
           script: |
-            echo "Executing deploy_script.sh"
-            chmod 777 ./scripts/deploy_script.sh
-            ./scripts/deploy_script.sh
+            docker stop digits-container || true
+            docker rm digits-container || true
+            docker pull ${{docker_image}}
+            docker run -d --name digits-container -p 3000:3000 ${{docker_image}}

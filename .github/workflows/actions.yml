@@ -69,7 +69,7 @@ jobs:
           username: ${{ env.ec2_username }}
           key: ${{ env.ec2_ssh_key }}
           port: ${{ env.ec2_ssh_port }}
-          inline: |
+          script: |
             echo "Executing deploy_script.sh"
             chmod +x deploy_script.sh
             ./scripts/deploy_script.sh
